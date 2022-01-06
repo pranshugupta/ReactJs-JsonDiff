@@ -9,12 +9,6 @@ table {
   table-layout: auto;
   width: 100%;
 }
-.col1 {
-  width: 25px important;
-}
-.cols {
-  width: calc((100% - 25px) / 2);
-}
 .key {
   font-weight: bold;
 }

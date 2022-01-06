@@ -83,12 +83,12 @@ function JsonDiff(props) {
   const tableRows = [];
   compareObject(tableRows, leftData, rightData, 0);
 
-  const rows = tableRows.map((row,index) => {
+  const rows = tableRows.map((row, index) => {
     return (
       <tr key={Math.random()}>
-        <td className="col1">{index+1}</td>
+        <td>{index + 1}</td>
         {row.leftCol ? (
-          <td className={`cols ${row.leftCol.className}`}>
+          <td className={row.leftCol.className}>
             <span className="key">{row.key}</span>:&nbsp;
             {JSON.stringify(row.leftCol.data)}
           </td>
@@ -96,7 +96,7 @@ function JsonDiff(props) {
           <td></td>
         )}
         {row.rightCol ? (
-          <td className={`cols ${row.rightCol.className}`}>
+          <td className={row.rightCol.className}>
             <span className="key">{row.key}</span>:&nbsp;
             {JSON.stringify(row.rightCol.data)}
           </td>
