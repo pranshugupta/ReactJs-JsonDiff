@@ -17,7 +17,7 @@ export default function App() {
     // strings: 'John',
   };
   const rightObject = {
-    rightArray:rightArray
+    leftArray:rightArray
     // strings: 'John1',
     // nulls: null,
     // booleans: true,

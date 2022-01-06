@@ -32,34 +32,39 @@ function compareObject(tableRows, parentKey, leftData, rightData, level) {
     if (leftData.hasOwnProperty(key) && rightData.hasOwnProperty(key)) {
       const oldVal = leftData[key];
       const newVal = rightData[key];
-      if (oldVal === newVal) {
-        const className = 'same';
-        tableRows.push({
-          level: childLevel,
-          key: key,
-          leftCol: {
-            className: className,
-            data: oldVal,
-          },
-          rightCol: {
-            className: className,
-            data: newVal,
-          },
-        });
+      const valType = jsonValueType(oldVal);
+      if (valType === 'array') {
+        compareArray(tableRows, key, oldVal, newVal, childLevel);
       } else {
-        const className = 'modified';
-        tableRows.push({
-          level: childLevel,
-          key: key,
-          leftCol: {
-            className: className,
-            data: oldVal,
-          },
-          rightCol: {
-            className: className,
-            data: newVal,
-          },
-        });
+        if (oldVal === newVal) {
+          const className = 'same';
+          tableRows.push({
+            level: childLevel,
+            key: key,
+            leftCol: {
+              className: className,
+              data: oldVal,
+            },
+            rightCol: {
+              className: className,
+              data: newVal,
+            },
+          });
+        } else {
+          const className = 'modified';
+          tableRows.push({
+            level: childLevel,
+            key: key,
+            leftCol: {
+              className: className,
+              data: oldVal,
+            },
+            rightCol: {
+              className: className,
+              data: newVal,
+            },
+          });
+        }
       }
     } else if (!leftData.hasOwnProperty(key) && rightData.hasOwnProperty(key)) {
       const newVal = rightData[key];
