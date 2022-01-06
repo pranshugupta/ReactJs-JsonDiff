@@ -2,8 +2,8 @@ import React from 'react';
 import './style.css';
 import JsonDiff from './jsonDiff/JsonDiff';
 export default function App() {
-  const leftArray = ['two', 'one', 'one'];
-  const rightArray = ['three', 'one'];
+  const leftArray = null;
+  const rightArray = ['two', 'one', 'one'];
   const leftObject = {
     strings: 'John',
   };
@@ -11,9 +11,9 @@ export default function App() {
   return (
     <JsonDiff
       leftCaption="Old Data"
-      leftData={leftObject}
+      leftData={leftArray}
       rightCaption="New Data"
-      rightData={rightObject}
+      rightData={rightArray}
     />
   );
 }

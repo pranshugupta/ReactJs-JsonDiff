@@ -139,78 +139,89 @@ function parseArray(tableRows, parentKey, arr, col, className, level) {
   cloeRow[col] = { className: className, data: ']' };
   tableRows.push(cloeRow);
 }
-function compareArray(tableRows, parentKey, leftData, rightData, level) {
-  const objClassName = 'test';
-  const openRow = { level: level, key: parentKey };
-  if (leftData) {
-    leftData.sort();
-    openRow.leftCol = { className: objClassName, data: '[' };
-  }
-  if (rightData) {
-    rightData.sort();
-    openRow.rightCol = { className: objClassName, data: '[' };
-  }
-  tableRows.push(openRow);
-  const childLevel = level + 1;
-
-  const allSortedArray = leftData.concat(rightData);
-  allSortedArray.forEach((item) => {
-    if (
-      leftData &&
-      leftData.includes(item) &&
-      rightData &&
-      rightData.includes(item)
-    ) {
-      const className = 'same';
-      tableRows.push({
-        level: childLevel,
-        leftCol: {
-          className: className,
-          data: item,
-        },
-        rightCol: {
-          className: className,
-          data: item,
-        },
-      });
-    } else if (
-      leftData &&
-      leftData.includes(item) &&
-      (!rightData || !rightData.includes(item))
-    ) {
-      const className = 'removed';
-      tableRows.push({
-        level: childLevel,
-        leftCol: {
-          className: className,
-          data: item,
-        },
-      });
-    } else if (
-      (!leftData || !leftData.includes(item)) &&
-      rightData.includes(item)
-    ) {
-      const className = 'added';
-      tableRows.push({
-        level: childLevel,
-        rightCol: {
-          className: className,
-          data: item,
-        },
-      });
+function compareArray(tableRows, parentKey, leftArr, rightArr, level) {
+  if (
+    (leftArr === null || leftArr === undefined) &&
+    (rightArr === null || rightArr === undefined)
+  )
+    return;
+  else if (leftArr === null || leftArr === undefined)
+  parseArray(tableRows, parentKey, rightArr, 'rightCol', 'added', level);
+  else if (rightArr === null || rightArr === undefined)
+  parseArray(tableRows, parentKey, leftArr, 'leftCol', 'removed', level);
+  else {
+    const objClassName = 'test';
+    const openRow = { level: level, key: parentKey };
+    if (leftData) {
+      leftData.sort();
+      openRow.leftCol = { className: objClassName, data: '[' };
     }
-  });
+    if (rightData) {
+      rightData.sort();
+      openRow.rightCol = { className: objClassName, data: '[' };
+    }
+    tableRows.push(openRow);
+    const childLevel = level + 1;
 
-  const closeRow = { level: level };
-  if (leftData) closeRow.leftCol = { className: objClassName, data: ']' };
-  if (rightData) closeRow.rightCol = { className: objClassName, data: ']' };
-  tableRows.push(closeRow);
+    const allSortedArray = leftData.concat(rightData);
+    allSortedArray.forEach((item) => {
+      if (
+        leftData &&
+        leftData.includes(item) &&
+        rightData &&
+        rightData.includes(item)
+      ) {
+        const className = 'same';
+        tableRows.push({
+          level: childLevel,
+          leftCol: {
+            className: className,
+            data: item,
+          },
+          rightCol: {
+            className: className,
+            data: item,
+          },
+        });
+      } else if (
+        leftData &&
+        leftData.includes(item) &&
+        (!rightData || !rightData.includes(item))
+      ) {
+        const className = 'removed';
+        tableRows.push({
+          level: childLevel,
+          leftCol: {
+            className: className,
+            data: item,
+          },
+        });
+      } else if (
+        (!leftData || !leftData.includes(item)) &&
+        rightData.includes(item)
+      ) {
+        const className = 'added';
+        tableRows.push({
+          level: childLevel,
+          rightCol: {
+            className: className,
+            data: item,
+          },
+        });
+      }
+    });
+
+    const closeRow = { level: level };
+    if (leftData) closeRow.leftCol = { className: objClassName, data: ']' };
+    if (rightData) closeRow.rightCol = { className: objClassName, data: ']' };
+    tableRows.push(closeRow);
+  }
 }
 function JsonDiff(props) {
   const { leftCaption, rightCaption, leftData, rightData } = props;
   const tableRows = [];
-  compareObject(tableRows, null, leftData, rightData, 0);
-  //compareArray(tableRows, null, leftData, rightData, 0);
+  //compareObject(tableRows, null, leftData, rightData, 0);
+  compareArray(tableRows, null, leftData, rightData, 0);
   const rows = tableRows.map((row, index) => {
     const spacing = [];
     for (let i = 0; i < row.level; i++) {
