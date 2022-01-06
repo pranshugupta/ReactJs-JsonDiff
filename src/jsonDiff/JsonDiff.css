@@ -13,7 +13,7 @@ table {
   width: 25px important;
 }
 .cols {
-  width: calc((100% - 15px) / 2);
+  width: calc((100% - 25px) / 2);
 }
 .key {
   font-weight: bold;
