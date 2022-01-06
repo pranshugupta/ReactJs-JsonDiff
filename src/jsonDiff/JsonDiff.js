@@ -5,6 +5,7 @@ const arrayConstructor = [].constructor;
 const objectConstructor = {}.constructor;
 function jsonValueType(value) {
   if (value === null) return 'null';
+  if (value === undefined) return 'undefined';
   if (value.constructor === Boolean) return 'bool';
   if (value.constructor === Number) return 'number';
   if (value.constructor === stringConstructor) return 'string';
@@ -13,7 +14,6 @@ function jsonValueType(value) {
   if (value.constructor === Function) return 'function';
   return '';
 }
-
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
 }
@@ -87,6 +87,55 @@ function compareObject(tableRows, parentKey, leftData, rightData, level) {
   const closeRow = { level: level, key: parentKey };
   if (leftData) closeRow.leftCol = { className: objClassName, data: '}' };
   if (rightData) closeRow.rightCol = { className: objClassName, data: '}' };
+  tableRows.push(closeRow);
+}
+function compareArray(tableRows, parentKey, leftData, rightData, level) {
+  const objClassName = 'test';
+  const openRow = { level: level, key: parentKey };
+  if (leftData) openRow.leftCol = { className: objClassName, data: '[' };
+  if (rightData) openRow.rightCol = { className: objClassName, data: '[' };
+  tableRows.push(openRow);
+  const childLevel = level + 1;
+
+  const allSortedArray = leftData.concat(rightData).filter(onlyUnique).sort();
+  allSortedArray.forEach((item) => {
+    if (leftData.includes(item) && rightData.includes(item)) {
+      const className = 'same';
+      tableRows.push({
+        level: childLevel,
+        leftCol: {
+          className: className,
+          data: item,
+        },
+        rightCol: {
+          className: className,
+          data: item,
+        },
+      });
+    } else if (leftData.includes(item) && !rightData.includes(item)) {
+      const className = 'removed';
+      tableRows.push({
+        level: childLevel,
+        leftCol: {
+          className: className,
+          data: item,
+        },
+      });
+    } else if (!leftData.includes(item) && rightData.includes(item)) {
+      const className = 'added';
+      tableRows.push({
+        level: childLevel,
+        rightCol: {
+          className: className,
+          data: item,
+        },
+      });
+    }
+  });
+
+  const closeRow = { level: level, key: parentKey };
+  if (leftData) closeRow.leftCol = { className: objClassName, data: ']' };
+  if (rightData) closeRow.rightCol = { className: objClassName, data: ']' };
   tableRows.push(closeRow);
 }
 function JsonDiff(props) {
