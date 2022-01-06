@@ -4,7 +4,9 @@ import JsonDiff from './jsonDiff/JsonDiff';
 export default function App() {
   const leftArray = ['two', 'one', 'one'];
   const rightArray = ['three', 'one'];
-  const leftObject = null;
+  const leftObject = {
+    strings: 'John',
+  };
   const rightObject = {
     strings: 'John',
   };

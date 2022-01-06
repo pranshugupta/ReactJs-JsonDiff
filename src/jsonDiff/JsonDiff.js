@@ -18,7 +18,7 @@ function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
 }
 
-function parseObject(tableRows, parentKey, data, col, className, level) {
+function parseObject(tableRows, parentKey, obj, col, className, level) {
   const openRow = {
     level: level,
     key: parentKey,
@@ -27,14 +27,14 @@ function parseObject(tableRows, parentKey, data, col, className, level) {
   tableRows.push(openRow);
 
   const childLevel = level + 1;
-  Object.keys(data).forEach((key) => {
+  Object.keys(obj).forEach((key) => {
     const td = {
       level: childLevel,
       key: key,
     };
     td[col] = {
       className: className,
-      data: data[key],
+      data: obj[key],
     };
     tableRows.push(td);
   });
@@ -45,7 +45,6 @@ function parseObject(tableRows, parentKey, data, col, className, level) {
   cloeRow[col] = { className: className, data: '}' };
   tableRows.push(cloeRow);
 }
-
 function compareObject(tableRows, parentKey, leftData, rightData, level) {
   if (
     (leftData === null || leftData === undefined) &&
@@ -135,6 +134,33 @@ function compareObject(tableRows, parentKey, leftData, rightData, level) {
     };
     tableRows.push(closeRow);
   }
+}
+function parseArray(tableRows, parentKey, data, col, className, level) {
+  const openRow = {
+    level: level,
+    key: parentKey,
+  };
+  openRow[col] = { className: className, data: '{' };
+  tableRows.push(openRow);
+
+  const childLevel = level + 1;
+  Object.keys(data).forEach((key) => {
+    const td = {
+      level: childLevel,
+      key: key,
+    };
+    td[col] = {
+      className: className,
+      data: data[key],
+    };
+    tableRows.push(td);
+  });
+  const cloeRow = {
+    level: level,
+    key: parentKey,
+  };
+  cloeRow[col] = { className: className, data: '}' };
+  tableRows.push(cloeRow);
 }
 function compareArray(tableRows, parentKey, leftData, rightData, level) {
   const objClassName = 'test';
