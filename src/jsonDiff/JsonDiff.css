@@ -1,7 +1,7 @@
 table,
 th,
 td {
-  border: 1px solid black;
+  border: 0.1px solid black;
   border-collapse: collapse;
   text-align: left;
 }
@@ -16,11 +16,11 @@ table {
   background-color: white;
 }
 .modified {
-  background-color: rgb(255 255 85);
+  background-color: #ffff0040;
 }
 .removed {
-  background-color: rgb(255 152 152);
+  background-color: #ff000040;
 }
 .added {
-  background-color: rgb(129 164 245);
+  background-color: #0000ff40;
 }

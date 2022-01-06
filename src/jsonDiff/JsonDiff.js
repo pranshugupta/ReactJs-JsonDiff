@@ -18,18 +18,24 @@ function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
 }
 
-function compareObject(tableRows, oldData, newData, iteration) {
-  const oldKeys = Object.keys(oldData);
-  const newKeys = Object.keys(newData);
+function compareObject(tableRows, parentKey, leftData, rightData, level) {
+  const objClassName = 'test';
+  const openRow = { level: level, key: parentKey };
+  if (leftData) openRow.leftCol = { className: objClassName, data: '{' };
+  if (rightData) openRow.rightCol = { className: objClassName, data: '{' };
+  tableRows.push(openRow);
+  const childLevel = level + 1;
+  const oldKeys = Object.keys(leftData);
+  const newKeys = Object.keys(rightData);
   const allSortedKeys = oldKeys.concat(newKeys).filter(onlyUnique).sort();
   allSortedKeys.forEach((key) => {
-    if (oldData.hasOwnProperty(key) && newData.hasOwnProperty(key)) {
-      const oldVal = oldData[key];
-      const newVal = newData[key];
+    if (leftData.hasOwnProperty(key) && rightData.hasOwnProperty(key)) {
+      const oldVal = leftData[key];
+      const newVal = rightData[key];
       if (oldVal === newVal) {
         const className = 'same';
         tableRows.push({
-          iteration: iteration,
+          level: childLevel,
           key: key,
           leftCol: {
             className: className,
@@ -43,7 +49,7 @@ function compareObject(tableRows, oldData, newData, iteration) {
       } else {
         const className = 'modified';
         tableRows.push({
-          iteration: iteration,
+          level: childLevel,
           key: key,
           leftCol: {
             className: className,
@@ -55,20 +61,20 @@ function compareObject(tableRows, oldData, newData, iteration) {
           },
         });
       }
-    } else if (!oldData.hasOwnProperty(key) && newData.hasOwnProperty(key)) {
-      const newVal = newData[key];
+    } else if (!leftData.hasOwnProperty(key) && rightData.hasOwnProperty(key)) {
+      const newVal = rightData[key];
       tableRows.push({
-        iteration: iteration,
+        level: childLevel,
         key: key,
         rightCol: {
           className: 'added',
           data: newVal,
         },
       });
-    } else if (oldData.hasOwnProperty(key) && !newData.hasOwnProperty(key)) {
-      const oldVal = oldData[key];
+    } else if (leftData.hasOwnProperty(key) && !rightData.hasOwnProperty(key)) {
+      const oldVal = leftData[key];
       tableRows.push({
-        iteration: iteration,
+        level: childLevel,
         key: key,
         leftCol: {
           className: 'removed',
@@ -77,28 +83,38 @@ function compareObject(tableRows, oldData, newData, iteration) {
       });
     }
   });
+
+  const closeRow = { level: level, key: parentKey };
+  if (leftData) closeRow.leftCol = { className: objClassName, data: '}' };
+  if (rightData) closeRow.rightCol = { className: objClassName, data: '}' };
+  tableRows.push(closeRow);
 }
 function JsonDiff(props) {
   const { leftCaption, rightCaption, leftData, rightData } = props;
   const tableRows = [];
-  compareObject(tableRows, leftData, rightData, 0);
-
+  compareObject(tableRows, null, leftData, rightData, 0);
   const rows = tableRows.map((row, index) => {
+    const spacing = [];
+    for (let i = 0; i < row.level; i++) {
+      spacing.push(<>&emsp;&emsp;</>);
+    }
     return (
       <tr key={Math.random()}>
         <td>{index + 1}</td>
         {row.leftCol ? (
           <td className={row.leftCol.className}>
-            <span className="key">{row.key}</span>:&nbsp;
-            {JSON.stringify(row.leftCol.data)}
+            {spacing}
+            {row.key && <span className="key">{row.key}:</span>}&nbsp;
+            {row.leftCol.data}
           </td>
         ) : (
           <td></td>
         )}
         {row.rightCol ? (
           <td className={row.rightCol.className}>
-            <span className="key">{row.key}</span>:&nbsp;
-            {JSON.stringify(row.rightCol.data)}
+            {spacing}
+            {row.key && <span className="key">{row.key}:</span>}&nbsp;
+            {row.rightCol.data}
           </td>
         ) : (
           <td></td>
