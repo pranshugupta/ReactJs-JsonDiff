@@ -1,0 +1,16 @@
+table,
+th,
+td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+table {
+  table-layout: auto;
+  width: 100%;
+}
+.col1 {
+  width: 25px important;
+}
+.cols {
+  width: calc((100% - 15px) / 2);
+}
