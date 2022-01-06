@@ -7,9 +7,7 @@ export default function App() {
   const leftObject = {
     strings: 'John',
   };
-  const rightObject = {
-    strings: 'John',
-  };
+  const rightObject = null;
   return (
     <JsonDiff
       leftCaption="Old Data"

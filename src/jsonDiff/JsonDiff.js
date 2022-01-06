@@ -45,16 +45,16 @@ function parseObject(tableRows, parentKey, obj, col, className, level) {
   cloeRow[col] = { className: className, data: '}' };
   tableRows.push(cloeRow);
 }
-function compareObject(tableRows, parentKey, leftData, rightData, level) {
+function compareObject(tableRows, parentKey, leftObj, rightObj, level) {
   if (
-    (leftData === null || leftData === undefined) &&
-    (rightData === null || rightData === undefined)
+    (leftObj === null || leftObj === undefined) &&
+    (rightObj === null || rightObj === undefined)
   )
     return;
-  else if (leftData === null || leftData === undefined)
-    parseObject(tableRows, parentKey, rightData, 'rightCol', 'added', level);
-  else if (rightData === null || rightData === undefined)
-    parseObject(tableRows, parentKey, leftData, 'leftCol', 'removed', level);
+  else if (leftObj === null || leftObj === undefined)
+    parseObject(tableRows, parentKey, rightObj, 'rightCol', 'added', level);
+  else if (rightObj === null || rightObj === undefined)
+    parseObject(tableRows, parentKey, leftObj, 'leftCol', 'removed', level);
   else {
     const openRow = {
       level: level,
@@ -64,16 +64,16 @@ function compareObject(tableRows, parentKey, leftData, rightData, level) {
     };
     tableRows.push(openRow);
 
-    const leftDataKeys = Object.keys(leftData);
-    const rightDataKeys = Object.keys(rightData);
+    const leftDataKeys = Object.keys(leftObj);
+    const rightDataKeys = Object.keys(rightObj);
     const allDataKeys = leftDataKeys
       .concat(rightDataKeys)
       .filter(onlyUnique)
       .sort();
     const childLevel = level + 1;
     allDataKeys.forEach((key) => {
-      if (!leftData.hasOwnProperty(key)) {
-        const rightVal = rightData[key];
+      if (!leftObj.hasOwnProperty(key)) {
+        const rightVal = rightObj[key];
         tableRows.push({
           level: childLevel,
           key: key,
@@ -82,8 +82,8 @@ function compareObject(tableRows, parentKey, leftData, rightData, level) {
             data: rightVal,
           },
         });
-      } else if (!rightData.hasOwnProperty(key)) {
-        const leftVal = leftData[key];
+      } else if (!rightObj.hasOwnProperty(key)) {
+        const leftVal = leftObj[key];
         tableRows.push({
           level: childLevel,
           key: key,
@@ -93,8 +93,8 @@ function compareObject(tableRows, parentKey, leftData, rightData, level) {
           },
         });
       } else {
-        const leftVal = leftData[key];
-        const rightVal = rightData[key];
+        const leftVal = leftObj[key];
+        const rightVal = rightObj[key];
         if (leftVal === rightVal) {
           const className = 'same';
           tableRows.push({
