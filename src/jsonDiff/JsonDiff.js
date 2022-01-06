@@ -89,7 +89,7 @@ function compareObject(tableRows, parentKey, leftData, rightData, level) {
     }
   });
 
-  const closeRow = { level: level, key: parentKey };
+  const closeRow = { level: level };
   if (leftData) closeRow.leftCol = { className: objClassName, data: '}' };
   if (rightData) closeRow.rightCol = { className: objClassName, data: '}' };
   tableRows.push(closeRow);
@@ -138,7 +138,7 @@ function compareArray(tableRows, parentKey, leftData, rightData, level) {
     }
   });
 
-  const closeRow = { level: level, key: parentKey };
+  const closeRow = { level: level};
   if (leftData) closeRow.leftCol = { className: objClassName, data: ']' };
   if (rightData) closeRow.rightCol = { className: objClassName, data: ']' };
   tableRows.push(closeRow);
