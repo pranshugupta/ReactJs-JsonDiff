@@ -2,7 +2,7 @@ import React from 'react';
 import './style.css';
 import JsonDiff from './jsonDiff/JsonDiff';
 export default function App() {
-  const leftArray = null;
+  const leftArray = [];
   const rightArray = ['two', 'one', 'one'];
   const leftObject = {
     strings: 'John',
