@@ -18,36 +18,96 @@ function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
 }
 
-function compareObject(tableRows, parentKey, leftData, rightData, level) {
-  const objClassName = 'test';
-  const openRow = { level: level, key: parentKey };
-  if (leftData) openRow.leftCol = { className: objClassName, data: '{' };
-  if (rightData) openRow.rightCol = { className: objClassName, data: '{' };
+function parseObject(tableRows, parentKey, data, col, className, level) {
+  const openRow = {
+    level: level,
+    key: parentKey,
+  };
+  openRow[col] = { className: className, data: '{' };
   tableRows.push(openRow);
+
   const childLevel = level + 1;
-  const oldKeys = Object.keys(leftData);
-  const newKeys = Object.keys(rightData);
-  const allSortedKeys = oldKeys.concat(newKeys).filter(onlyUnique).sort();
-  allSortedKeys.forEach((key) => {
-    if (leftData.hasOwnProperty(key) && rightData.hasOwnProperty(key)) {
-      const oldVal = leftData[key];
-      const newVal = rightData[key];
-      const valType = jsonValueType(oldVal);
-      if (valType === 'array') {
-        compareArray(tableRows, key, oldVal, newVal, childLevel);
+  Object.keys(data).forEach((key) => {
+    const td = {
+      level: childLevel,
+      key: key,
+    };
+    td[col] = {
+      className: className,
+      data: data[key],
+    };
+    tableRows.push(td);
+  });
+  const cloeRow = {
+    level: level,
+    key: parentKey,
+  };
+  cloeRow[col] = { className: className, data: '}' };
+  tableRows.push(cloeRow);
+}
+
+function compareObject(tableRows, parentKey, leftData, rightData, level) {
+  if (
+    (leftData === null || leftData === undefined) &&
+    (rightData === null || rightData === undefined)
+  )
+    return;
+  else if (leftData === null || leftData === undefined)
+    parseObject(tableRows, parentKey, rightData, 'rightCol', 'added', level);
+  else if (rightData === null || rightData === undefined)
+    parseObject(tableRows, parentKey, leftData, 'leftCol', 'removed', level);
+  else {
+    const openRow = {
+      level: level,
+      key: parentKey,
+      leftCol: { data: '{' },
+      rightCol: { data: '{' },
+    };
+    tableRows.push(openRow);
+
+    const leftDataKeys = Object.keys(leftData);
+    const rightDataKeys = Object.keys(rightData);
+    const allDataKeys = leftDataKeys
+      .concat(rightDataKeys)
+      .filter(onlyUnique)
+      .sort();
+    const childLevel = level + 1;
+    allDataKeys.forEach((key) => {
+      if (!leftData.hasOwnProperty(key)) {
+        const rightVal = rightData[key];
+        tableRows.push({
+          level: childLevel,
+          key: key,
+          rightCol: {
+            className: 'added',
+            data: rightVal,
+          },
+        });
+      } else if (!rightData.hasOwnProperty(key)) {
+        const leftVal = leftData[key];
+        tableRows.push({
+          level: childLevel,
+          key: key,
+          leftCol: {
+            className: 'removed',
+            data: leftVal,
+          },
+        });
       } else {
-        if (oldVal === newVal) {
+        const leftVal = leftData[key];
+        const rightVal = rightData[key];
+        if (leftVal === rightVal) {
           const className = 'same';
           tableRows.push({
             level: childLevel,
             key: key,
             leftCol: {
               className: className,
-              data: oldVal,
+              data: leftVal,
             },
             rightCol: {
               className: className,
-              data: newVal,
+              data: rightVal,
             },
           });
         } else {
@@ -57,61 +117,40 @@ function compareObject(tableRows, parentKey, leftData, rightData, level) {
             key: key,
             leftCol: {
               className: className,
-              data: oldVal,
+              data: leftVal,
             },
             rightCol: {
               className: className,
-              data: newVal,
+              data: rightVal,
             },
           });
         }
       }
-    } else if (!leftData.hasOwnProperty(key) && rightData.hasOwnProperty(key)) {
-      const newVal = rightData[key];
-      const valType = jsonValueType(newVal);
-      if (valType === 'array') {
-        compareArray(tableRows, key, null, newVal, childLevel);
-      } else {
-        tableRows.push({
-          level: childLevel,
-          key: key,
-          rightCol: {
-            className: 'added',
-            data: newVal,
-          },
-        });
-      }
-    } else if (leftData.hasOwnProperty(key) && !rightData.hasOwnProperty(key)) {
-      const oldVal = leftData[key];
-      const valType = jsonValueType(oldVal);
-      if (valType === 'array') {
-        compareArray(tableRows, key, oldVal, null, childLevel);
-      } else {
-        tableRows.push({
-          level: childLevel,
-          key: key,
-          leftCol: {
-            className: 'removed',
-            data: oldVal,
-          },
-        });
-      }
-    }
-  });
-
-  const closeRow = { level: level };
-  if (leftData) closeRow.leftCol = { className: objClassName, data: '}' };
-  if (rightData) closeRow.rightCol = { className: objClassName, data: '}' };
-  tableRows.push(closeRow);
+    });
+    const closeRow = {
+      level: level,
+      key: parentKey,
+      leftCol: { data: '}' },
+      rightCol: { data: '}' },
+    };
+    tableRows.push(closeRow);
+  }
 }
 function compareArray(tableRows, parentKey, leftData, rightData, level) {
   const objClassName = 'test';
   const openRow = { level: level, key: parentKey };
-  if (leftData) openRow.leftCol = { className: objClassName, data: '[' };
-  if (rightData) openRow.rightCol = { className: objClassName, data: '[' };
+  if (leftData) {
+    leftData.sort();
+    openRow.leftCol = { className: objClassName, data: '[' };
+  }
+  if (rightData) {
+    rightData.sort();
+    openRow.rightCol = { className: objClassName, data: '[' };
+  }
   tableRows.push(openRow);
   const childLevel = level + 1;
-  const allSortedArray = leftData.concat(rightData).filter(onlyUnique).sort();
+
+  const allSortedArray = leftData.concat(rightData);
   allSortedArray.forEach((item) => {
     if (
       leftData &&
@@ -145,8 +184,7 @@ function compareArray(tableRows, parentKey, leftData, rightData, level) {
         },
       });
     } else if (
-      (!leftData ||
-      !leftData.includes(item)) &&
+      (!leftData || !leftData.includes(item)) &&
       rightData.includes(item)
     ) {
       const className = 'added';
@@ -168,8 +206,8 @@ function compareArray(tableRows, parentKey, leftData, rightData, level) {
 function JsonDiff(props) {
   const { leftCaption, rightCaption, leftData, rightData } = props;
   const tableRows = [];
-  //compareObject(tableRows, null, leftData, rightData, 0);
-  compareArray(tableRows, null, leftData, rightData, 0);
+  compareObject(tableRows, null, leftData, rightData, 0);
+  //compareArray(tableRows, null, leftData, rightData, 0);
   const rows = tableRows.map((row, index) => {
     const spacing = [];
     for (let i = 0; i < row.level; i++) {
