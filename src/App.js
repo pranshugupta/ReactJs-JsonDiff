@@ -1,15 +1,11 @@
 import React from 'react';
 import './style.css';
 import JsonDiff from './jsonDiff/JsonDiff';
-export default function App() {  
-  const leftArray = [
-    "One", "two", "three"
-  ];
-  const rightArray = [
-    "One", "two", "Four"
-  ];
+export default function App() {
+  const leftArray = ['one', 'two', 'three', 'one'];
+  const rightArray = ['one', 'two', 'Four', 'two'];
   const leftObject = {
-    leftArray:leftArray
+    leftArray: leftArray,
     // strings: 'John',
     // nulls: null,
     // booleans: true,
@@ -17,7 +13,7 @@ export default function App() {
     // strings: 'John',
   };
   const rightObject = {
-    leftArray:rightArray
+    rightArray: rightArray,
     // strings: 'John1',
     // nulls: null,
     // booleans: true,
@@ -27,9 +23,9 @@ export default function App() {
   return (
     <JsonDiff
       leftCaption="Old Data"
-      leftData={leftObject}
+      leftData={leftArray}
       rightCaption="New Data"
-      rightData={rightObject}
+      rightData={rightArray}
     />
   );
 }
