@@ -19,29 +19,16 @@ function onlyUnique(value, index, self) {
 }
 
 function parseObject(tableRows, parentKey, obj, col, className, level) {
-  const openRow = {
-    level: level,
-    key: parentKey,
-  };
+  const openRow = { level: level, key: parentKey };
   openRow[col] = { className: className, data: '{' };
   tableRows.push(openRow);
-
   const childLevel = level + 1;
   Object.keys(obj).forEach((key) => {
-    const td = {
-      level: childLevel,
-      key: key,
-    };
-    td[col] = {
-      className: className,
-      data: obj[key],
-    };
+    const td = { level: childLevel, key: key };
+    td[col] = { className: className, data: obj[key] };
     tableRows.push(td);
   });
-  const cloeRow = {
-    level: level,
-    key: parentKey,
-  };
+  const cloeRow = { level: level, key: parentKey };
   cloeRow[col] = { className: className, data: '}' };
   tableRows.push(cloeRow);
 }
@@ -135,31 +122,21 @@ function compareObject(tableRows, parentKey, leftObj, rightObj, level) {
     tableRows.push(closeRow);
   }
 }
-function parseArray(tableRows, parentKey, data, col, className, level) {
-  const openRow = {
-    level: level,
-    key: parentKey,
-  };
-  openRow[col] = { className: className, data: '{' };
+function parseArray(tableRows, parentKey, arr, col, className, level) {
+  const openRow = { level: level, key: parentKey };
+  openRow[col] = { className: className, data: '[' };
   tableRows.push(openRow);
-
   const childLevel = level + 1;
-  Object.keys(data).forEach((key) => {
-    const td = {
-      level: childLevel,
-      key: key,
-    };
-    td[col] = {
-      className: className,
-      data: data[key],
-    };
+  arr.forEach((item) => {
+    const td = { level: childLevel };
+    td[col] = { className: className, data: item };
     tableRows.push(td);
   });
   const cloeRow = {
     level: level,
     key: parentKey,
   };
-  cloeRow[col] = { className: className, data: '}' };
+  cloeRow[col] = { className: className, data: ']' };
   tableRows.push(cloeRow);
 }
 function compareArray(tableRows, parentKey, leftData, rightData, level) {
