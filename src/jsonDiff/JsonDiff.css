@@ -3,6 +3,7 @@ th,
 td {
   border: 1px solid black;
   border-collapse: collapse;
+  text-align: left;
 }
 table {
   table-layout: auto;
@@ -13,4 +14,19 @@ table {
 }
 .cols {
   width: calc((100% - 15px) / 2);
+}
+.key {
+  font-weight: bold;
+}
+.same {
+  background-color: white;
+}
+.modified {
+  background-color: rgb(255 255 85);
+}
+.removed {
+  background-color: rgb(255 152 152);
+}
+.added {
+  background-color: rgb(129 164 245);
 }

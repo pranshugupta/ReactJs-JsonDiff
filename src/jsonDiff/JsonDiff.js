@@ -5,93 +5,114 @@ const arrayConstructor = [].constructor;
 const objectConstructor = {}.constructor;
 function jsonValueType(value) {
   if (value === null) return 'null';
-  if (value === undefined) return 'undefined';
   if (value.constructor === Boolean) return 'bool';
   if (value.constructor === Number) return 'number';
   if (value.constructor === stringConstructor) return 'string';
   if (value.constructor === arrayConstructor) return 'array';
   if (value.constructor === objectConstructor) return 'object';
   if (value.constructor === Function) return 'function';
-  return 'Not sure what it is';
+  return '';
 }
+
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
 }
-// const oldValue = {
-//   one: null,
-//   two: undefined,
-//   three: "John",
-//   four: ["test", "test1"],
-//   five: { blah: "blue" },
-//   six: true,
-//   seven: 12,
-//   eight() {
-//     return `{name: "${this.name}", age: ${this.age}}`;
-//   },
-// };
-// const newValue = {
-//   Pone: null,
-//   two: undefined,
-//   Cthree: "John",
-//   four: ["test1", "test1"],
-//   five: { blah: "blue" },
-//   Ssix: true,
-//   seven: 124,
-//   eight() {
-//     return `{name: "${this.name}", age: ${this.age}}`;
-//   },
-// };
-const oldValue = {
-  one: 'One',
-};
-const newValue = {
-  one: 'One',
-};
-const tableRows = [];
-function compareObject(oldData, newData, iteration) {
+
+function compareObject(tableRows, oldData, newData, iteration) {
   const oldKeys = Object.keys(oldData);
   const newKeys = Object.keys(newData);
   const allSortedKeys = oldKeys.concat(newKeys).filter(onlyUnique).sort();
-
   allSortedKeys.forEach((key) => {
-    if (oldData[key] && newData[key]) {
+    if (oldData.hasOwnProperty(key) && newData.hasOwnProperty(key)) {
       const oldVal = oldData[key];
       const newVal = newData[key];
-      const oldValType = jsonValueType(oldVal);
-      const newValType = jsonValueType(newVal);
-      if (oldValType === newValType) {
-        if (oldVal === newVal) {
-          tableRows.push({
-            type: 'same',
-            leftCol: oldVal,
-            rightCol: newVal,
-            iteration: iteration,
-          });
-        }
+      if (oldVal === newVal) {
+        const className = 'same';
+        tableRows.push({
+          iteration: iteration,
+          key: key,
+          leftCol: {
+            className: className,
+            data: oldVal,
+          },
+          rightCol: {
+            className: className,
+            data: newVal,
+          },
+        });
+      } else {
+        const className = 'modified';
+        tableRows.push({
+          iteration: iteration,
+          key: key,
+          leftCol: {
+            className: className,
+            data: oldVal,
+          },
+          rightCol: {
+            className: className,
+            data: newVal,
+          },
+        });
       }
-    } else if (!oldData[key] && newData[key]) {
-    } else if (oldData[key] && !newData[key]) {
+    } else if (!oldData.hasOwnProperty(key) && newData.hasOwnProperty(key)) {
+      const newVal = newData[key];
+      tableRows.push({
+        iteration: iteration,
+        key: key,
+        rightCol: {
+          className: 'added',
+          data: newVal,
+        },
+      });
+    } else if (oldData.hasOwnProperty(key) && !newData.hasOwnProperty(key)) {
+      const oldVal = oldData[key];
+      tableRows.push({
+        iteration: iteration,
+        key: key,
+        leftCol: {
+          className: 'removed',
+          data: oldVal,
+        },
+      });
     }
   });
 }
-function JsonDiff() {
-  compareObject(oldValue, newValue, 0);
+function JsonDiff(props) {
+  const { leftCaption, rightCaption, leftData, rightData } = props;
+  const tableRows = [];
+  compareObject(tableRows, leftData, rightData, 0);
+
   const rows = tableRows.map((row) => {
     return (
       <tr key={Math.random()}>
         <td className="col1"></td>
-        <td className="cols">{row.leftCol}</td>
-        <td className="cols">{row.rightCol}</td>
+        {row.leftCol ? (
+          <td className={`cols ${row.leftCol.className}`}>
+            <span className="key">{row.key}</span>:&nbsp;
+            {JSON.stringify(row.leftCol.data)}
+          </td>
+        ) : (
+          <td></td>
+        )}
+        {row.rightCol ? (
+          <td className={`cols ${row.rightCol.className}`}>
+            <span className="key">{row.key}</span>:&nbsp;
+            {JSON.stringify(row.rightCol.data)}
+          </td>
+        ) : (
+          <td></td>
+        )}
       </tr>
     );
   });
   return (
-    <table>
+    <table className="JsonDiffTable">
       <tbody>
         <tr>
           <th></th>
-          <th>OldData</th>
-          <th>Newdata</th>
+          <th>{leftCaption}</th>
+          <th>{rightCaption}</th>
         </tr>
         {rows}
       </tbody>
