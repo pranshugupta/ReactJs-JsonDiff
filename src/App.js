@@ -1008,14 +1008,6 @@ export default function App() {
       "uploaded_apk_url": ""
     }
   ];
-  const data1 = [
-    {
-      arr: [[1, 2]],
-    },
-    {
-      arr: [[1, 2]],
-    },
-  ];
   return (
     <JsonDiff
       leftCaption="Old Data"
