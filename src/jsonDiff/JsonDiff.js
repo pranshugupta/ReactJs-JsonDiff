@@ -1,23 +1,6 @@
 import React from "react";
 import "./JsonDiff.css";
-const stringConstructor = "".constructor;
-const arrayConstructor = [].constructor;
-const objectConstructor = {}.constructor;
-function jsonValueType(value) {
-  if (value === null) return "null";
-  if (value === undefined) return "undefined";
-  if (value.constructor === Boolean) return "bool";
-  if (value.constructor === Number) return "number";
-  if (value.constructor === stringConstructor) return "string";
-  if (value.constructor === arrayConstructor) return "array";
-  if (value.constructor === objectConstructor) return "object";
-  if (value.constructor === Function) return "function";
-  return "";
-}
-function onlyUnique(value, index, self) {
-  return self.indexOf(value) === index;
-}
-
+import Utils from "../utlis";
 function parseObject(tableRows, parentKey, obj, col, className, level) {
   const openRow = { level: level, key: parentKey };
   openRow[col] = { className: className, data: "{" };
@@ -25,7 +8,7 @@ function parseObject(tableRows, parentKey, obj, col, className, level) {
   const childLevel = level + 1;
   Object.keys(obj).forEach((key) => {
     const item = obj[key];
-    const itemType = jsonValueType(item);
+    const itemType = Utils.jsonValueType(item);
     if (itemType === "array") {
       parseArray(tableRows, parentKey, item, col, className, childLevel);
     } else if (itemType === "object") {
@@ -63,13 +46,13 @@ function compareObject(tableRows, parentKey, leftObj, rightObj, level) {
     const rightDataKeys = Object.keys(rightObj);
     const allDataKeys = leftDataKeys
       .concat(rightDataKeys)
-      .filter(onlyUnique)
+      .filter(Utils.onlyUnique)
       .sort();
     const childLevel = level + 1;
     allDataKeys.forEach((key) => {
       if (!leftObj.hasOwnProperty(key)) {
         const rightVal = rightObj[key];
-        const rightValType = jsonValueType(rightVal);
+        const rightValType = Utils.jsonValueType(rightVal);
         if (rightValType === "array") {
           parseArray(tableRows, key, rightVal, "rightCol", "added", childLevel);
         } else if (rightValType === "object") {
@@ -92,7 +75,7 @@ function compareObject(tableRows, parentKey, leftObj, rightObj, level) {
           });
       } else if (!rightObj.hasOwnProperty(key)) {
         const leftVal = leftObj[key];
-        const leftValType = jsonValueType(leftVal);
+        const leftValType = Utils.jsonValueType(leftVal);
         if (leftValType === "array") {
           parseArray(tableRows, key, leftVal, "leftCol", "removed", childLevel);
         } else if (leftValType === "object") {
@@ -116,8 +99,8 @@ function compareObject(tableRows, parentKey, leftObj, rightObj, level) {
       } else {
         const leftVal = leftObj[key];
         const rightVal = rightObj[key];
-        const leftValType = jsonValueType(leftVal);
-        const rightValType = jsonValueType(rightVal);
+        const leftValType = Utils.jsonValueType(leftVal);
+        const rightValType = Utils.jsonValueType(rightVal);
         let valType;
         if (leftValType === rightValType) {
           valType = leftValType;
@@ -179,7 +162,7 @@ function parseArray(tableRows, parentKey, arr, col, className, level) {
   tableRows.push(openRow);
   const childLevel = level + 1;
   arr.forEach((item) => {
-    const itemType = jsonValueType(item);
+    const itemType = Utils.jsonValueType(item);
     if (itemType === "array") {
       parseArray(tableRows, "", item, col, className, childLevel);
     } else if (itemType === "object") {
@@ -219,7 +202,7 @@ function compareArray(tableRows, parentKey, leftArr, rightArr, level) {
     const childLevel = level + 1;
     while (leftArr.length > 0) {
       const leftItem = leftArr[0];
-      const leftItemType = jsonValueType(leftItem);
+      const leftItemType = Utils.jsonValueType(leftItem);
       if (leftItemType === "array") {
         parseArray(tableRows, "", leftItem, "leftCol", "removed", childLevel);
         leftArr.splice(0, 1);
@@ -258,7 +241,7 @@ function compareArray(tableRows, parentKey, leftArr, rightArr, level) {
     }
     while (rightArr.length > 0) {
       const rigthItem = rightArr[0];
-      const rightItemType = jsonValueType(rigthItem);
+      const rightItemType = Utils.jsonValueType(rigthItem);
       const className = "added";
       if (rightItemType === "array") {
         parseArray(tableRows, "", rigthItem, "rightCol", className, childLevel);
