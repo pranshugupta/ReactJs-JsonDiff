@@ -298,7 +298,7 @@ function JsonDiff(props) {
   const rows = tableRows.map((row, index) => {
     const spacing = [];
     for (let i = 0; i < row.level; i++) {
-      spacing.push(<>&emsp;&emsp;</>);
+      spacing.push(<>&emsp;</>);
     }
     return (
       <tr key={Math.random()}>
